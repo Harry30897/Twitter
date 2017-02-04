@@ -1,0 +1,51 @@
+<h2>Logged In as <%= user.email %></h2>
+<form action="/Tweet" method="POST">
+<label>Tweet</label><input type="text" name="tweet">
+<input type="submit" value="Submit" =><br>
+</form>
+
+<h3 align="center">TWEETS</h3><br>
+<table border =1 align="center" bordercolor="darkblue">
+<tr>
+<td width="80%"><label>User_id</label></td>
+<td width="80%"><label>Tweet</label></td>
+</tr>
+
+<% if tweets %>
+<% tweets.each do |tweet| %>
+   <% users.each do |user| %>
+      <% if user.id==tweet.user_id %>
+         <tr>
+         <td><%= user.email %></td>
+         <td><%= tweet.content %>
+           <form action="/like" method="POST">
+               <input type="hidden" name="tweet_id" value= "<%= tweet.id %>">
+
+               <!--Like-->
+               <% arr = Likes.all(:tweet_id=>tweet.id, :user_id=>session[:user_id]) %>
+               <% if arr.size!=0 %>
+               <% puts arr %>
+                 <input  type="submit" value="Unlike">
+                 <% puts "in1" %>
+               <% else %>
+                 <input type="submit" value="Like">
+                 <% puts "in2" %>
+               <% end %>
+               </form>
+               <form action="/Delete" method="POST">
+               <input type="hidden" name="tweet_id" value= "<%= tweet.id %>">
+               <input type="submit" value="Delete">
+               </form>
+           </form>
+         </td>
+         </tr>
+      <% end %>
+   <% end %> 
+<% end %>
+<% end %>
+
+</table><br><br><br>       
+	
+<form action="/signout" method="POST" >
+<input type="submit" value="Logout" align="bottom">
+</form>
