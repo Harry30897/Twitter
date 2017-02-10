@@ -26,10 +26,18 @@ class Likes
 	property :user_id, Integer
 end	
 
+class Followers
+	include DataMapper::Resource
+	property :number, Serial
+	property :follower_id, Integer
+	property :following_id, Integer
+end	
+
 DataMapper.finalize
 User.auto_upgrade!
 Tweets.auto_upgrade!
 Likes.auto_upgrade!
+Followers.auto_upgrade!
 
 get '/' do
 	erb :signin
@@ -94,6 +102,7 @@ get '/profile' do
 	user = User.get(id)
 	tweets = Tweets.all
 	users = User.all
+	#follow = Followers.get(:follower_id=>session[:user_id])
 	erb :table, locals: {:tweets=>tweets, :users=>users, :user=>user}
 end
 
@@ -129,4 +138,19 @@ post '/Delete' do
 		tweet.destroy
 	end
 	redirect '/profile'	
+end
+
+ post '/follow' do
+ 	following_id = params[:follow_id]
+ 	follower_id = session[:user_id]
+ 	f = Followers.all(:follower_id=> follower_id, :following_id=>following_id).first
+ 	if f
+ 		f.destroy
+ 	else
+ 		f1 = Followers.new
+ 		f1.following_id = following_id
+ 		f1.follower_id = follower_id
+ 	 	f1.save
+ 	end	
+ 	redirect '/profile'
 end	

@@ -3,6 +3,8 @@
 <label>Tweet</label><input type="text" name="tweet">
 <input type="submit" value="Submit" =><br>
 </form>
+<label>Followers: </label><%= Followers.all(:following_id=>session[:user_id]).count %><br>
+<label>Following:  </label><%= Followers.all(:follower_id=>session[:user_id]).count %>
 
 <h3 align="center">TWEETS</h3><br>
 <table border =1 align="center" bordercolor="darkblue">
@@ -16,7 +18,22 @@
    <% users.each do |user| %>
       <% if user.id==tweet.user_id %>
          <tr>
-         <td><%= user.email %></td>
+         <td>
+           <%= user.email %>
+            <form action="/follow" method="POST">
+                 <input type="hidden" name="follow_id" value= "<%= tweet.user_id %>">
+
+                 <!--Follow-->
+                 <% if tweet.user_id != session[:user_id] %>
+                    <% arr = Followers.all(:following_id=>tweet.user_id, :follower_id=>session[:user_id]) %>
+                    <% if arr.size!=0 %>
+                      <input type="submit" value="Unfollow">
+                    <% else %>
+                      <input type="submit" value="Follow">
+                    <% end %> 
+                 <% end %>         
+            </form> 
+         </td>
          <td><%= tweet.content %>
            <form action="/like" method="POST">
                <input type="hidden" name="tweet_id" value= "<%= tweet.id %>">
@@ -32,6 +49,7 @@
                  <% puts "in2" %>
                <% end %>
                </form>
+              
                <form action="/Delete" method="POST">
                <input type="hidden" name="tweet_id" value= "<%= tweet.id %>">
                <input type="submit" value="Delete">
